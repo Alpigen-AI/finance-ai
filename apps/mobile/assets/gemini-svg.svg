@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <!-- Mountain / Peak 'A' Mark -->
+  <path 
+    d="M 250 80 L 410 330 L 370 330 L 250 145 L 180 250 L 210 250 L 250 190 L 320 295 L 130 295 L 90 330 L 250 80 Z" 
+    fill="#0B2545" 
+  />
+  
+  <!-- Connected Nodes & Lines (Cyan) -->
+  <g fill="none" stroke="#00C4CC" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Line segments -->
+    <line x1="90" y1="380" x2="250" y2="300" />
+    <line x1="250" y1="300" x2="410" y2="380" />
+    
+    <!-- Outer Rings for Nodes -->
+    <circle cx="90" cy="380" r="22" fill="#FFFFFF" stroke="#00C4CC" stroke-width="16" />
+    <circle cx="250" cy="300" r="22" fill="#FFFFFF" stroke="#00C4CC" stroke-width="16" />
+    <circle cx="410" cy="380" r="22" fill="#FFFFFF" stroke="#00C4CC" stroke-width="16" />
+  </g>
+</svg>

@@ -1,0 +1,12 @@
+{
+  "firestore": {
+    "rules": "infrastructure/database/firestore.rules",
+    "indexes": "infrastructure/database/firestore.indexes.json"
+  },
+  "hosting": {
+    "source": "apps/web",
+    "frameworksBackend": {
+      "region": "us-central1"
+    }
+  }
+}

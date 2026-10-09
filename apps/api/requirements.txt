@@ -1,0 +1,7 @@
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic-settings>=2.4
+firebase-admin>=6.5
+google-cloud-firestore>=2.16
+google-adk>=0.1.0
+python-multipart>=0.0.9

@@ -1,0 +1,32 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // A user can only ever touch their own document tree. This also
+    // protects every subcollection (receipts, expenses, transactions,
+    // recurringObligations, monthlyReports, chatMessages) via the
+    // recursive wildcard match below — one rule, whole tree.
+    match /users/{userId} {
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false; // account deletion goes through a backend flow, not direct delete
+
+      // User-managed config (their known bills) — safe for the client
+      // to write directly, unlike AI-derived collections below.
+      match /recurringObligations/{obligationId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      match /{document=**} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        // Direct client writes are disabled for AI-processed data (receipts,
+        // expenses, chatMessages) — those are written by the Cloud Run
+        // backend via the Admin SDK, which bypasses these rules anyway.
+        // This blocks a compromised/spoofed client from writing fake
+        // expense data directly into Firestore.
+        allow write: if false;
+      }
+    }
+  }
+}

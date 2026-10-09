@@ -1,0 +1,29 @@
+# Builds the API image and deploys it to Cloud Run.
+# Trigger with: gcloud builds submit --config infrastructure/deployment/cloudbuild.yaml
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-f"
+      - "infrastructure/deployment/Dockerfile"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/finance-ai-api:$SHORT_SHA"
+      - "."
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/finance-ai-api:$SHORT_SHA"]
+
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "finance-ai-api"
+      - "--image=gcr.io/$PROJECT_ID/finance-ai-api:$SHORT_SHA"
+      - "--region=us-central1"
+      - "--platform=managed"
+      - "--allow-unauthenticated"          # API does its own Firebase-token auth per-request
+      - "--set-env-vars=FIREBASE_PROJECT_ID=$PROJECT_ID,GCP_PROJECT_ID=$PROJECT_ID,GCP_REGION=us-central1"
+
+images:
+  - "gcr.io/$PROJECT_ID/finance-ai-api:$SHORT_SHA"
