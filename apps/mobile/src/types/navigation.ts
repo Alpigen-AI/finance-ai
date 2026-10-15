@@ -20,6 +20,7 @@ export type RootStackParamList = {
     BalanceSetup: undefined;
     Settings: undefined;
     Obligations: undefined;
+    ReviewReports: undefined;
     ExpenseEntry: {
         expense?: {
             id: string;

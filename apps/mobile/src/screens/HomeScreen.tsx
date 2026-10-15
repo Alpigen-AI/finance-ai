@@ -16,6 +16,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import api from "../api/client";
 import { colors } from "../theme/color";
 import { LogoMark } from "../components/Logo";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Profile {
     country: "US" | "IN";
@@ -134,7 +135,7 @@ export default function HomeScreen() {
                 </View>
                 <View style={styles.navRight}>
                     <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate("Settings")}>
-                        <Text style={styles.iconText}>⚙️</Text>
+                        <Ionicons name="settings-outline" size={20} color={colors.navy} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -144,7 +145,7 @@ export default function HomeScreen() {
                 {/* Greeting Header */}
                 <View style={styles.headerContainer}>
                     <Text style={styles.greetingTitle}>
-                        Hello, {profile.displayName || "User"} 👋
+                        Hello, {profile.displayName || "User"}
                     </Text>
                     <Text style={styles.greetingSub}>Here is your financial overview for this month.</Text>
                 </View>
@@ -250,7 +251,7 @@ export default function HomeScreen() {
                 <View style={styles.gridContainer}>
                     <TouchableOpacity style={styles.gridCard} onPress={() => navigation.navigate("Camera")}>
                         <View style={[styles.iconCircle, { backgroundColor: "#EEF2FF" }]}>
-                            <Text style={styles.cardEmoji}>📷</Text>
+                            <Ionicons name="scan-outline" size={22} color="#4F46E5" />
                         </View>
                         <Text style={styles.cardTitle}>Scan Receipt</Text>
                         <Text style={styles.cardSubtitle}>Auto-extract expenses</Text>
@@ -272,7 +273,9 @@ export default function HomeScreen() {
                     activeOpacity={0.85}
                 >
                     <View style={styles.obligationHomeIcon}>
-                        <Text style={{ fontSize: 23 }}>📅</Text>
+                        <Text style={{ fontSize: 23 }}><View style={styles.obligationHomeIcon}>
+                            <Ionicons name="calendar-outline" size={24} color="#059669" />
+                        </View></Text>
                     </View>
 
                     <View style={styles.obligationHomeContent}>
@@ -297,7 +300,9 @@ export default function HomeScreen() {
                     activeOpacity={0.85}
                 >
                     <View style={styles.expenseHomeIcon}>
-                        <Text style={{ fontSize: 23 }}>💳</Text>
+                        <Text style={{ fontSize: 23 }}><View style={styles.expenseHomeIcon}>
+                            <Ionicons name="card-outline" size={24} color="#4F46E5" />
+                        </View></Text>
                     </View>
 
                     <View style={styles.expenseHomeContent}>
@@ -316,11 +321,13 @@ export default function HomeScreen() {
                 </TouchableOpacity>
 
                 {/* Secondary Actions */}
-                <TouchableOpacity style={styles.actionRow} onPress={() => navigation.navigate("ExpenseHistory")}>
-                    <Text style={styles.actionEmoji}>📋</Text>
+                <TouchableOpacity style={styles.actionRow} onPress={() => navigation.navigate("ReviewReports")}>
+                    <Text style={styles.actionEmoji}><View style={styles.expenseHomeIcon}>
+                        <Ionicons name="bar-chart-outline" size={22} color={colors.navy} />
+                    </View></Text>
                     <View style={styles.actionText}>
-                        <Text style={styles.actionTitle}>Recent Receipts & History</Text>
-                        <Text style={styles.actionSubtitle}>Review uploaded scans and items</Text>
+                        <Text style={styles.actionTitle}>View reports and Insights</Text>
+                        <Text style={styles.actionSubtitle}>Review your expenses and track them</Text>
                     </View>
                     <Text style={styles.arrowIcon}>›</Text>
                 </TouchableOpacity>
@@ -342,22 +349,22 @@ export default function HomeScreen() {
             {/* Bottom Tab Navigation Bar */}
             <View style={styles.bottomTabBar}>
                 <TouchableOpacity style={styles.tabItem} onPress={() => { }}>
-                    <Text style={styles.tabIcon}>🏠</Text>
+                    <Ionicons name="home" size={22} color={colors.teal} />
                     <Text style={[styles.tabLabel, styles.tabActive]}>Home</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("Camera")}>
-                    <Text style={styles.tabIcon}>📷</Text>
+                    <Ionicons name="scan-outline" size={22} color={colors.textSecondary} />
                     <Text style={styles.tabLabel}>Scan</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("Chat")}>
-                    <Text style={styles.tabIcon}>💬</Text>
+                    <Ionicons name="chatbubble-ellipses-outline" size={22} color={colors.textSecondary} />
                     <Text style={styles.tabLabel}>Coach</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.tabItem} onPress={openWebDashboard}>
-                    <Text style={styles.tabIcon}>📊</Text>
+                    <Ionicons name="stats-chart-outline" size={22} color={colors.textSecondary} />
                     <Text style={styles.tabLabel}>Analytics</Text>
                 </TouchableOpacity>
             </View>

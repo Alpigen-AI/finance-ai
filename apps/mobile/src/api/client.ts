@@ -1,11 +1,11 @@
 import axios from "axios";
 import { auth } from "../config/firebase";
 
-const API_BASE_URL = " https://gulflike-wai-unawares.ngrok-free.dev";
+const API_BASE_URL = "https://gulflike-wai-unawares.ngrok-free.dev";
 
 const api = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 15000,
+    timeout: 200000,
     headers: {
         "ngrok-skip-browser-warning": "true",
         "Content-Type": "application/json",

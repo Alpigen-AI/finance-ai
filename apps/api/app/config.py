@@ -48,7 +48,7 @@ if settings.ai_backend == "ai_studio":
     if settings.google_ai_studio_api_key:
         os.environ["GOOGLE_API_KEY"] = settings.google_ai_studio_api_key
 else:
-    # Production default — every Gemini call routes through Vertex AI,
+    # Production default (vertex_ai) — every Gemini call routes through Vertex AI,
     # scoped to this GCP project's IAM/billing/data boundary.
     os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "TRUE"
     os.environ["GOOGLE_CLOUD_PROJECT"] = settings.gcp_project_id

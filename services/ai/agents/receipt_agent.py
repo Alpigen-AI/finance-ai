@@ -94,7 +94,7 @@ Given a receipt image and the user's country ("US" or "IN"):
 
 receipt_agent = Agent(
     name="receipt_categorizer",
-    model="gemini-3.8-flash",
+    model="gemini-2.5-flash",
     instruction=RECEIPT_AGENT_INSTRUCTION,
     tools=[FunctionTool(list_tax_categories)],
 )

@@ -18,6 +18,7 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import api from "../api/client";
 import { colors } from "../theme/color";
 import { LogoMark } from "../components/Logo";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Obligation {
     id: string;
@@ -67,24 +68,12 @@ const formatMonth = (month: string) => {
     });
 };
 
-const changeMonth = (month: string, offset: number) => {
-    const [year, monthNumber] = month.split("-").map(Number);
 
-    const date = new Date(
-        year,
-        monthNumber - 1 + offset,
-        1
-    );
-
-    return `${date.getFullYear()}-${String(
-        date.getMonth() + 1
-    ).padStart(2, "0")}`;
-};
 
 export default function ObligationsScreen() {
     const navigation = useNavigation<any>();
 
-    const [month, setMonth] = useState(getCurrentMonth());
+    const month = getCurrentMonth();
 
     const [profile, setProfile] = useState<Profile | null>(null);
 
@@ -362,49 +351,16 @@ export default function ObligationsScreen() {
 
                     <View style={styles.calendarIcon}>
                         <Text style={{ fontSize: 23 }}>
-                            📅
+
+
+                            <View style={styles.calendarIcon}>
+                                <Ionicons name="calendar-outline" size={24} color="#059669" />
+                            </View>
                         </Text>
                     </View>
                 </View>
 
-                {/* Month Selector */}
-                <View style={styles.monthSelector}>
-                    <TouchableOpacity
-                        style={styles.monthArrow}
-                        onPress={() =>
-                            setMonth(
-                                changeMonth(month, -1)
-                            )
-                        }
-                    >
-                        <Text style={styles.monthArrowText}>
-                            ‹
-                        </Text>
-                    </TouchableOpacity>
 
-                    <View style={styles.monthCenter}>
-                        <Text style={styles.monthSmall}>
-                            MONTH
-                        </Text>
-
-                        <Text style={styles.monthTitle}>
-                            {formatMonth(month)}
-                        </Text>
-                    </View>
-
-                    <TouchableOpacity
-                        style={styles.monthArrow}
-                        onPress={() =>
-                            setMonth(
-                                changeMonth(month, 1)
-                            )
-                        }
-                    >
-                        <Text style={styles.monthArrowText}>
-                            ›
-                        </Text>
-                    </TouchableOpacity>
-                </View>
 
                 {/* Summary Card */}
                 <View style={styles.summaryCard}>
@@ -425,7 +381,9 @@ export default function ObligationsScreen() {
 
                         <View style={styles.summaryIcon}>
                             <Text style={{ fontSize: 21 }}>
-                                💳
+                                <View style={styles.summaryIcon}>
+                                    <Ionicons name="card-outline" size={22} color="#FFFFFF" />
+                                </View>
                             </Text>
                         </View>
                     </View>
@@ -820,7 +778,9 @@ export default function ObligationsScreen() {
                                         styles.closeText
                                     }
                                 >
-                                    ×
+                                    <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                                        <Ionicons name="close" size={20} color={colors.textSecondary} />
+                                    </TouchableOpacity>
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -982,64 +942,24 @@ export default function ObligationsScreen() {
 
             {/* Bottom Navigation */}
             <View style={styles.bottomTabBar}>
-                <TouchableOpacity
-                    style={styles.tabItem}
-                    onPress={() =>
-                        navigation.navigate("Home")
-                    }
-                >
-                    <Text style={styles.tabIcon}>
-                        🏠
-                    </Text>
-
-                    <Text style={styles.tabLabel}>
-                        Home
-                    </Text>
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("Home")}>
+                    <Ionicons name="home-outline" size={22} color={colors.textSecondary} />
+                    <Text style={styles.tabLabel}>Home</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.tabItem}
-                    onPress={() =>
-                        navigation.navigate("Camera")
-                    }
-                >
-                    <Text style={styles.tabIcon}>
-                        📷
-                    </Text>
-
-                    <Text style={styles.tabLabel}>
-                        Scan
-                    </Text>
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("Camera")}>
+                    <Ionicons name="scan-outline" size={22} color={colors.textSecondary} />
+                    <Text style={styles.tabLabel}>Scan</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.tabItem}
-                    onPress={() =>
-                        navigation.navigate("Chat")
-                    }
-                >
-                    <Text style={styles.tabIcon}>
-                        💬
-                    </Text>
-
-                    <Text style={styles.tabLabel}>
-                        Coach
-                    </Text>
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("Chat")}>
+                    <Ionicons name="chatbubble-ellipses-outline" size={22} color={colors.textSecondary} />
+                    <Text style={styles.tabLabel}>Coach</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.tabItem}
-                    onPress={() =>
-                        navigation.navigate("Analytics")
-                    }
-                >
-                    <Text style={styles.tabIcon}>
-                        📊
-                    </Text>
-
-                    <Text style={styles.tabLabel}>
-                        Analytics
-                    </Text>
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("Analytics")}>
+                    <Ionicons name="stats-chart-outline" size={22} color={colors.textSecondary} />
+                    <Text style={styles.tabLabel}>Analytics</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -1082,7 +1002,7 @@ const styles = StyleSheet.create({
     iconButton: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        borderRadius: 12,
         backgroundColor: colors.surface,
         justifyContent: "center",
         alignItems: "center",

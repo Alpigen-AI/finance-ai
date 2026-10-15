@@ -15,6 +15,7 @@ import api from "../api/client";
 import { colors } from "../theme/color";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
+import { Ionicons } from "@expo/vector-icons";
 
 type Expense = {
     id?: string;
@@ -208,6 +209,8 @@ export default function CameraCaptureScreen({
                     quality: 0.7,
                 });
 
+
+
             if (!photo) return;
 
             const formData = new FormData();
@@ -235,40 +238,54 @@ export default function CameraCaptureScreen({
                 }
             );
 
-            const extracted =
-                response.data.extracted;
-
-            setVendor(
-                extracted.vendor ?? ""
+            console.log(
+                "RECEIPT EXTRACTION RESPONSE:",
+                JSON.stringify(response.data, null, 2)
             );
 
+
+            const extracted = response.data?.extracted;
+
+            console.log(
+                "EXTRACTED RECEIPT DATA:",
+                JSON.stringify(extracted, null, 2)
+            );
+
+            if (!extracted || typeof extracted !== "object") {
+                throw new Error(
+                    "The server returned no extracted receipt data."
+                );
+            }
+
+            setVendor(extracted.vendor ?? "");
+
+            const extractedAmount =
+                extracted.total_amount ?? extracted.amount;
+
             setAmount(
-                extracted.total_amount != null
-                    ? String(extracted.total_amount)
+                extractedAmount != null
+                    ? String(extractedAmount)
                     : ""
             );
 
             setExpenseDate(
                 extracted.purchase_date ??
-                new Date()
-                    .toISOString()
-                    .split("T")[0]
+                extracted.expense_date ??
+                new Date().toISOString().split("T")[0]
             );
 
             setTaxCode(
-                extracted.line_items?.[0]
-                    ?.tax_code ??
+                extracted.line_items?.[0]?.tax_code ??
                 extracted.tax_code ??
                 ""
             );
 
-            setNotes(
-                extracted.notes ?? ""
+            setIsDeductible(
+                extracted.is_deductible ?? false
             );
 
-            setReceiptId(
-                response.data.receipt_id
-            );
+            setNotes(extracted.notes ?? "");
+            setReceiptId(response.data.receipt_id);
 
             setShowCamera(false);
 
@@ -276,19 +293,28 @@ export default function CameraCaptureScreen({
                 "Receipt scanned",
                 "Please review the extracted details before saving."
             );
-        } catch (error: any) {
-            const message =
-                error.response?.status === 402
-                    ? "You've hit your free-tier scan limit this month."
-                    : "Couldn't read that receipt. Try a clearer photo.";
 
-            Alert.alert(
-                "Scan failed",
-                message
+
+        } catch (error: any) {
+            console.log(
+                "RECEIPT EXTRACTION ERROR:",
+                error.response?.data ?? error.message
             );
+
+            const status = error.response?.status;
+
+            const message =
+                status === 402
+                    ? "You've hit your free-tier scan limit this month."
+                    : status
+                        ? `Receipt extraction failed (HTTP ${status}). Please try again.`
+                        : "Could not connect to the server. Check your connection and try again.";
+
+            Alert.alert("Scan failed", message);
         } finally {
             setProcessing(false);
         }
+
     };
 
     // --------------------------------------------------
@@ -544,7 +570,7 @@ export default function CameraCaptureScreen({
                             "Choose how you want to add your receipt",
                             [
                                 {
-                                    text: "📷 Take Photo",
+                                    text: "Take Photo",
                                     onPress: async () => {
                                         if (!permission.granted) {
                                             const result = await requestPermission();
@@ -558,7 +584,7 @@ export default function CameraCaptureScreen({
                                     },
                                 },
                                 {
-                                    text: "🖼️ Choose from Gallery",
+                                    text: "Choose from Gallery",
                                     onPress: pickReceipt,
                                 },
                                 {
@@ -570,7 +596,7 @@ export default function CameraCaptureScreen({
                     }}
                 >
                     <Text style={styles.scanButtonText}>
-                        📷 Scan Receipt
+                        Scan Receipt
                     </Text>
                 </TouchableOpacity>
 

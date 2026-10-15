@@ -30,6 +30,7 @@ import ExpenseHistoryScreen from "./src/screens/ExpenseHistoryScreen";
 import BalanceSetupScreen from "./src/screens/BalanceSetupScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
 import ObligationsScreen from "./src/screens/ObligationsScreen";
+import ReviewReportsScreen from "./src/screens/ReviewReportsScreen";
 
 import { colors } from "./src/theme/color";
 
@@ -277,6 +278,16 @@ export default function App() {
               }
               options={{
                 headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
+              name="ReviewReports"
+              component={
+                ReviewReportsScreen
+              }
+              options={{
+                title: "Review Reports",
               }}
             />
           </>

@@ -7,11 +7,13 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     Alert,
+    Platform
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import api from "../api/client";
 import { colors } from "../theme/color";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Expense {
     id: string;
@@ -399,6 +401,28 @@ export default function ExpenseHistoryScreen({
                     </View>
                 }
             />
+            {/* Bottom Navigation */}
+            <View style={styles.bottomTabBar}>
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("Home")}>
+                    <Ionicons name="home-outline" size={22} color={colors.textSecondary} />
+                    <Text style={styles.tabLabel}>Home</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("Camera")}>
+                    <Ionicons name="scan-outline" size={22} color={colors.textSecondary} />
+                    <Text style={styles.tabLabel}>Scan</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("Chat")}>
+                    <Ionicons name="chatbubble-ellipses-outline" size={22} color={colors.textSecondary} />
+                    <Text style={styles.tabLabel}>Coach</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("Analytics")}>
+                    <Ionicons name="stats-chart-outline" size={22} color={colors.textSecondary} />
+                    <Text style={styles.tabLabel}>Analytics</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }
@@ -424,6 +448,33 @@ const styles = StyleSheet.create({
         paddingTop: 18,
         paddingBottom: 14,
     },
+    tabItem: {
+        alignItems: "center",
+        minWidth: 64,
+        gap: 3,
+    },
+    tabLabel: {
+        fontSize: 11,
+        color: colors.textSecondary,
+        fontWeight: "600",
+    },
+    bottomTabBar: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        flexDirection: "row",
+        justifyContent: "space-around",
+        alignItems: "center",
+        backgroundColor: colors.surface,
+        borderTopWidth: 1,
+        borderTopColor: colors.border,
+        paddingTop: 10,
+        paddingBottom:
+            Platform.OS === "ios" ? 34 : 42,
+        elevation: 8,
+    },
+
 
     title: {
         fontSize: 28,
