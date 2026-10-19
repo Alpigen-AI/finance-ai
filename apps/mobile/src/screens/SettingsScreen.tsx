@@ -24,9 +24,7 @@ export default function SettingsScreen({ navigation }: any) {
                 <Text style={styles.value}>{profile.country === "US" ? "🇺🇸 United States" : "🇮🇳 India"}</Text>
 
                 <Text style={styles.label}>Plan</Text>
-                <Text style={styles.value}>
-                    {profile.tier === "premium" ? "Premium" : `Free (${profile.freeScansUsed}/5 scans used)`}
-                </Text>
+                <Text style={styles.value}>Free</Text>
             </View>
 
             <TouchableOpacity style={styles.row} onPress={() => navigation.navigate("BalanceSetup")}>
