@@ -11,7 +11,7 @@ import {
     Platform,
     ActivityIndicator,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import api from "../api/client";
 import { colors } from "../theme/color";
@@ -53,6 +53,7 @@ export default function ChatScreen() {
     const [input, setInput] = useState("");
     const [sending, setSending] = useState(false);
     const [loadingHistory, setLoadingHistory] = useState(true);
+    const insets = useSafeAreaInsets();
 
     const listRef = useRef<FlatList<Message>>(null);
 
@@ -196,11 +197,11 @@ export default function ChatScreen() {
     return (
         <SafeAreaView
             style={styles.safeArea}
-            edges={["top", "left", "right", "bottom"]}
+            edges={["top", "left", "right"]}
         >
             <KeyboardAvoidingView
                 style={styles.container}
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                behavior="padding"
                 keyboardVerticalOffset={0}
             >
                 <View style={styles.header}>
@@ -296,7 +297,11 @@ export default function ChatScreen() {
                     </View>
                 )}
 
-                <View style={styles.composerContainer}>
+                <View
+                    style={[
+                        styles.composerContainer,
+                        { paddingBottom: Math.max(insets.bottom, 8) + 28 },
+                    ]}>
                     <View style={styles.inputRow}>
                         <TextInput
                             style={styles.input}
@@ -613,7 +618,7 @@ const styles = StyleSheet.create({
     composerContainer: {
         paddingHorizontal: 14,
         paddingTop: 11,
-        paddingBottom: 8,
+        paddingBottom: 22,
         backgroundColor: colors.background,
         borderTopWidth: StyleSheet.hairlineWidth,
         borderTopColor: colors.border,

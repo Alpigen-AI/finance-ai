@@ -1,7 +1,7 @@
 import axios from "axios";
 import { auth } from "../config/firebase";
 
-const API_BASE_URL = "https://gulflike-wai-unawares.ngrok-free.dev";
+const API_BASE_URL = "https://alpigen-api-187360943592.us-central1.run.app";
 
 const api = axios.create({
     baseURL: API_BASE_URL,

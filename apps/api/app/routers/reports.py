@@ -2,8 +2,7 @@
 from __future__ import annotations
 
 from datetime import date
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.auth import AuthedUser, get_current_user
 from app.firestore_client import FieldFilter, user_doc, user_subcollection
@@ -173,3 +172,100 @@ async def get_monthly_insights(
             status_code=500,
             detail="Unable to generate insights right now.",
         ) from exc
+
+
+@router.get("/available-months")
+async def get_available_months(
+    user: AuthedUser = Depends(get_current_user),
+):
+    """
+    Return YYYY-MM months that contain budget, expense,
+    or obligation documents for the authenticated user.
+    """
+    months: set[str] = set()
+
+    for collection_name in ("budgets", "expenses", "obligations"):
+        docs = [
+            doc
+            async for doc in user_subcollection(
+                user.uid, collection_name
+            ).stream()
+        ]
+
+        for doc in docs:
+            try:
+                parsed = date.fromisoformat(f"{doc.id}-01")
+                if parsed.strftime("%Y-%m") == doc.id:
+                    months.add(doc.id)
+            except ValueError:
+                # Ignore documents whose IDs aren't YYYY-MM.
+                continue
+
+    return {
+        "months": sorted(months, reverse=True),
+    }
+
+
+@router.get("/trends")
+async def get_spending_trends(
+    start_month: str = Query(..., alias="from"),
+    end_month: str = Query(..., alias="to"),
+    user: AuthedUser = Depends(get_current_user),
+):
+    """
+    Return monthly financial aggregates for charts.
+    Example: /reports/trends?from=2026-01&to=2026-10
+    """
+    def parse_month(value: str) -> date:
+        try:
+            parsed = date.fromisoformat(f"{value}-01")
+            if parsed.strftime("%Y-%m") != value:
+                raise ValueError
+            return parsed
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="Months must use YYYY-MM format.",
+            )
+
+    start = parse_month(start_month)
+    end = parse_month(end_month)
+
+    if start > end:
+        raise HTTPException(
+            status_code=400,
+            detail="'from' must be before or equal to 'to'.",
+        )
+
+    # Find months containing stored financial data.
+    available_response = await get_available_months(user)
+    available = [
+        month
+        for month in available_response["months"]
+        if start_month <= month <= end_month
+    ]
+
+    trends = []
+
+    for month_key in sorted(available):
+        month_date = parse_month(month_key)
+
+        report = await build_monthly_report(
+            user_id=user.uid,
+            month=month_date.month,
+            year=month_date.year,
+        )
+
+        summary = report.get("summary", {})
+
+        trends.append({
+            "month": month_key,
+            "budget": summary.get("budget", 0),
+            "totalSpent": summary.get("totalSpent", 0),
+            "totalObligations": summary.get(
+                "totalObligations", 0
+            ),
+            "safeToSpend": summary.get("safeToSpend", 0),
+        })
+
+    return {"months": trends}

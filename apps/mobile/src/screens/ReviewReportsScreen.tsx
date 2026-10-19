@@ -51,6 +51,8 @@ type AiInsights = {
     keyTakeaway?: string;
     nextMonthTips?: string[];
 };
+type IconName = React.ComponentProps<typeof Ionicons>["name"];
+
 
 const formatMoney = (value: number) =>
     `₹${Number(value || 0).toLocaleString("en-IN", {
@@ -73,12 +75,15 @@ const shiftMonth = (month: string, offset: number) => {
     return toMonthKey(new Date(year, monthNumber - 1 + offset, 1));
 };
 
-const BUDGET_STATUS = {
-    on_track: { icon: "✅", title: "On track" },
-    close_to_limit: { icon: "⚠️", title: "Close to your limit" },
-    over_budget: { icon: "🚨", title: "Over budget" },
-    no_budget: { icon: "🎯", title: "No budget set" },
-} as const;
+const BUDGET_STATUS: Record<
+    "on_track" | "close_to_limit" | "over_budget" | "no_budget",
+    { icon: IconName; title: string; tint: string }
+> = {
+    on_track: { icon: "checkmark-circle-outline", title: "On track", tint: "#197D68" },
+    close_to_limit: { icon: "alert-circle-outline", title: "Close to your limit", tint: "#A96B17" },
+    over_budget: { icon: "warning-outline", title: "Over budget", tint: "#C0392B" },
+    no_budget: { icon: "flag-outline", title: "No budget set", tint: "#3869B1" },
+};
 
 export default function ReviewReportsScreen() {
     const [selectedMonth, setSelectedMonth] = useState(() => toMonthKey(new Date()));
@@ -170,14 +175,15 @@ export default function ReviewReportsScreen() {
     };
 
     const renderInsightCard = (
-        icon: string,
+        icon: IconName,
         title: string,
         text?: string,
-        key?: string | number
+        key?: string | number,
+        tint: string = colors.teal
     ) => (
         <View key={key} style={styles.insightCard}>
-            <View style={styles.insightIconWrap}>
-                <Text style={styles.insightEmoji}>{icon}</Text>
+            <View style={[styles.insightIconWrap, { backgroundColor: `${tint}1A` }]}>
+                <Ionicons name={icon} size={20} color={tint} />
             </View>
             <View style={styles.insightContent}>
                 <Text style={styles.insightTitle}>{title}</Text>
@@ -252,7 +258,7 @@ export default function ReviewReportsScreen() {
                     </View>
                 ) : error ? (
                     <View style={styles.stateCard}>
-                        <Text style={styles.stateEmoji}>⚠️</Text>
+                        <Ionicons name="alert-circle-outline" size={32} color="#C0392B" style={{ marginBottom: 12 }} />
                         <Text style={styles.stateTitle}>Report unavailable</Text>
                         <Text style={styles.stateText}>{error}</Text>
                         <TouchableOpacity
@@ -324,7 +330,7 @@ export default function ReviewReportsScreen() {
                         <View style={styles.card}>
                             {categories.length === 0 ? (
                                 <View style={styles.emptyCategories}>
-                                    <Text style={styles.emptyEmoji}>🪙</Text>
+                                    <Ionicons name="receipt-outline" size={32} color={colors.teal} style={{ marginBottom: 12 }} />
                                     <Text style={styles.emptyTitle}>
                                         No spending recorded
                                     </Text>
@@ -415,81 +421,86 @@ export default function ReviewReportsScreen() {
                                 </TouchableOpacity>
                             </View>
                         ) : ai && !ai.available ? (
-                            renderInsightCard("📭", "Nothing to analyse", ai.message)
+                            renderInsightCard("file-tray-outline", "Nothing to analyse", ai.message)
                         ) : ai ? (
                             <View style={styles.insightList}>
-                                {renderInsightCard("📝", "Summary", ai.summary)}
+                                {renderInsightCard("document-text-outline", "Summary", ai.summary)}
 
                                 {ai.budgetStatus &&
-                                    renderInsightCard(
-                                        BUDGET_STATUS[ai.budgetStatus.status]?.icon ??
-                                        "🎯",
-                                        BUDGET_STATUS[ai.budgetStatus.status]?.title ??
-                                        "Budget",
-                                        ai.budgetStatus.message
-                                    )}
+                                    (() => {
+                                        const s = BUDGET_STATUS[ai.budgetStatus.status] ?? BUDGET_STATUS.no_budget;
+                                        return renderInsightCard(
+                                            s.icon,
+                                            s.title,
+                                            ai.budgetStatus.message,
+                                            "budget",
+                                            s.tint
+                                        );
+                                    })()}
 
                                 {ai.mostSpentOn &&
                                     renderInsightCard(
-                                        "💸",
-                                        `Most spent on: ${ai.mostSpentOn.name} (${formatMoney(
-                                            ai.mostSpentOn.amount
-                                        )})`,
-                                        ai.mostSpentOn.comment
+                                        "wallet-outline",
+                                        `Most spent on: ${ai.mostSpentOn.name} (${formatMoney(ai.mostSpentOn.amount)})`,
+                                        ai.mostSpentOn.comment,
+                                        "most-spent",
+                                        "#3869B1"
                                     )}
 
                                 {ai.topCategory &&
                                     renderInsightCard(
-                                        "🏷️",
-                                        `Top category: ${ai.topCategory.category} (${formatMoney(
-                                            ai.topCategory.amount
-                                        )})`,
-                                        ai.topCategory.comment
+                                        "pricetag-outline",
+                                        `Top category: ${ai.topCategory.category} (${formatMoney(ai.topCategory.amount)})`,
+                                        ai.topCategory.comment,
+                                        "top-category",
+                                        "#7951B5"
                                     )}
 
                                 {ai.mostPurchased &&
                                     renderInsightCard(
-                                        "🔁",
+                                        "repeat-outline",
                                         `Most purchased: ${ai.mostPurchased.name} (${ai.mostPurchased.count}×)`,
-                                        ai.mostPurchased.comment
+                                        ai.mostPurchased.comment,
+                                        "most-purchased"
                                     )}
 
                                 {ai.leastPurchased &&
                                     renderInsightCard(
-                                        "🔹",
+                                        "trending-down-outline",
                                         `Least purchased: ${ai.leastPurchased.name} (${ai.leastPurchased.count}×)`,
-                                        ai.leastPurchased.comment
+                                        ai.leastPurchased.comment,
+                                        "least-purchased",
+                                        "#3869B1"
                                     )}
 
                                 {ai.watchOut?.map((w, i) =>
                                     renderInsightCard(
-                                        "⚠️",
+                                        "warning-outline",
                                         `Watch out: ${w.title}`,
                                         w.detail,
-                                        `watch-${i}`
+                                        `watch-${i}`,
+                                        "#A96B17"
                                     )
                                 )}
 
                                 {ai.keyTakeaway &&
                                     renderInsightCard(
-                                        "🎯",
+                                        "bulb-outline",
                                         "Key takeaway to save more",
-                                        ai.keyTakeaway
+                                        ai.keyTakeaway,
+                                        "takeaway",
+                                        "#197D68"
                                     )}
 
                                 {!!ai.nextMonthTips?.length && (
                                     <View style={styles.insightCard}>
-                                        <View style={styles.insightIconWrap}>
-                                            <Text style={styles.insightEmoji}>🚀</Text>
+                                        <View style={[styles.insightIconWrap, { backgroundColor: `${colors.teal}1A` }]}>
+                                            <Ionicons name="trending-up-outline" size={20} color={colors.teal} />
                                         </View>
                                         <View style={styles.insightContent}>
-                                            <Text style={styles.insightTitle}>
-                                                Next month's tips
-                                            </Text>
+                                            <Text style={styles.insightTitle}>Next month's tips</Text>
                                             {ai.nextMonthTips.map((tip, i) => (
-                                                <Text key={i} style={styles.tipText}>
-                                                    • {tip}
-                                                </Text>
+                                                <Text key={i} style={styles.tipText}>• {tip}</Text>
                                             ))}
                                         </View>
                                     </View>
@@ -498,7 +509,7 @@ export default function ReviewReportsScreen() {
                         ) : null}
 
                         <View style={styles.noteCard}>
-                            <Text style={styles.noteIcon}>ℹ️</Text>
+                            <Ionicons name="information-circle-outline" size={18} color={colors.textPrimary} style={{ opacity: 0.6 }} />
                             <Text style={styles.noteText}>
                                 Amounts come from your recorded expenses, obligations
                                 and budget. AI insights only explain these numbers and
